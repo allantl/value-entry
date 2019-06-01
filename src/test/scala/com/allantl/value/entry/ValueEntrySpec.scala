@@ -21,6 +21,13 @@ class ValueEntrySpec extends WordSpec with MustMatchers {
       Apple.value mustBe "apple"
     }
 
+    "test uncapitalized" in {
+      sealed trait Fruit extends ValueEntry with ValueEntry.Uncapitalized
+      case object Apple extends Fruit
+
+      Apple.value mustBe "apple"
+    }
+
     "test snakecase" in {
       sealed trait Fruit extends ValueEntry with ValueEntry.SnakeCase
       case object RedApple extends Fruit

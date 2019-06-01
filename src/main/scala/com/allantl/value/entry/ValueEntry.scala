@@ -24,6 +24,15 @@ object ValueEntry {
     override def value: String = valueEntryName
   }
 
+  trait Uncapitalized extends ValueEntry {
+    private def uncapitalized(s: String): String =
+      s.head.toLower + s.tail
+
+    private[this] lazy val valueEntryName: String = uncapitalized(super.value)
+
+    override def value: String = valueEntryName
+  }
+
   /**
     * Transforms string to snake case.
     * Example: HelloWorld -> Hello_World
