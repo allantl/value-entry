@@ -2,7 +2,7 @@ import ReleaseTransformations._
 
 name := "value-entry"
 organization in ThisBuild := "com.github.allantl"
-homepage in ThisBuild := Some(url("https://github.com/allantl/jira4s"))
+homepage in ThisBuild := Some(url("https://github.com/allantl/value-entry"))
 licenses in ThisBuild := List("MIT" -> url("https://opensource.org/licenses/MIT"))
 
 val scala211Version = "2.11.12"

@@ -1,5 +1,7 @@
 # Value Entry
 
+[![Build Status](https://travis-ci.org/allantl/value-entry.svg?branch=master)](https://travis-ci.org/allantl/value-entry)
+
 Value entry for scala
 
 ```scala
