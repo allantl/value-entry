@@ -1,6 +1,8 @@
 import ReleaseTransformations._
+import sbt.Keys.crossScalaVersions
+import sbt.file
+import sbtcrossproject.CrossPlugin.autoImport.crossProject
 
-name := "value-entry"
 organization in ThisBuild := "com.github.allantl"
 homepage in ThisBuild := Some(url("https://github.com/allantl/value-entry"))
 licenses in ThisBuild := List("MIT" -> url("https://opensource.org/licenses/MIT"))
@@ -8,10 +10,30 @@ licenses in ThisBuild := List("MIT" -> url("https://opensource.org/licenses/MIT"
 val scala211Version = "2.11.12"
 val scala212Version = "2.12.8"
 
-scalaVersion := scala212Version
-crossScalaVersions := Seq(scala212Version, scala211Version)
-
+lazy val commonSettings = Seq(
+  name := "value-entry",
+  scalaVersion := scala212Version,
+  crossScalaVersions := Seq(scala212Version, scala211Version),
+  libraryDependencies ++= Seq(
+    "org.scalatest" %%% "scalatest" % "3.0.7" % "test"
+  )
+)
 lazy val publishSettings = Seq(
+  releaseCrossBuild := true,
+  releaseProcess := Seq[ReleaseStep](
+    checkSnapshotDependencies,
+    inquireVersions,
+    runClean,
+    runTest,
+    setReleaseVersion,
+    commitReleaseVersion,
+    tagRelease,
+    releaseStepCommandAndRemaining("+publishSigned"),
+    setNextVersion,
+    commitNextVersion,
+    releaseStepCommand("sonatypeReleaseAll"),
+    pushChanges
+  ),
   releasePublishArtifactsAction := PgpKeys.publishSigned.value,
   publishMavenStyle := true,
   publishArtifact in Test := false,
@@ -20,8 +42,8 @@ lazy val publishSettings = Seq(
   },
   publishTo := {
     val nexus = "https://oss.sonatype.org/"
-    if (isSnapshot.value) Some("snapshots" at nexus + "content/repositories/snapshots")
-    else Some("releases" at nexus + "service/local/staging/deploy/maven2")
+    if (isSnapshot.value) Some("snapshots".at(nexus + "content/repositories/snapshots"))
+    else Some("releases".at(nexus + "service/local/staging/deploy/maven2"))
   },
   autoAPIMappings := true,
   scmInfo := Some(
@@ -40,26 +62,11 @@ lazy val publishSettings = Seq(
   )
 )
 
-releaseCrossBuild := true
-releaseProcess := Seq[ReleaseStep](
-  checkSnapshotDependencies,
-  inquireVersions,
-  runClean,
-  runTest,
-  setReleaseVersion,
-  commitReleaseVersion,
-  tagRelease,
-  releaseStepCommandAndRemaining("+publishSigned"),
-  setNextVersion,
-  commitNextVersion,
-  releaseStepCommand("sonatypeReleaseAll"),
-  pushChanges
-)
+lazy val root = project.in(file(".")).aggregate(coreJS, coreJVM)
 
-lazy val root = (project in file("."))
-  .settings(
-    libraryDependencies ++= Seq(
-      "org.scalatest" %% "scalatest" % "3.0.7" % "test"
-    )
-  )
-  .settings(publishSettings)
+lazy val core = crossProject(JSPlatform, JVMPlatform)
+  .in(file("."))
+  .settings(commonSettings, publishSettings)
+
+lazy val coreJVM = core.jvm
+lazy val coreJS = core.js
