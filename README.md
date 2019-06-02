@@ -2,11 +2,11 @@
 
 [![Build Status](https://travis-ci.org/allantl/value-entry.svg?branch=master)](https://travis-ci.org/allantl/value-entry)
 
-Value entry for scala
+Value entry for Scala/ScalaJS
 
 ```scala
 libraryDependencies ++= Seq(
-    "com.github.allantl" %% "value-entry" % "0.1.0"
+    "com.github.allantl" %%% "value-entry" % "0.1.0"
 )
 ```
 
@@ -21,7 +21,7 @@ case object Apple extends Fruit
 Apple.value // Apple: String
 ```
 
-#### Uncapitalised
+#### Uncapitalized
 ```scala
 import com.allantl.value.entry.ValueEntry
 

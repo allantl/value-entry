@@ -1,24 +1,28 @@
 import ReleaseTransformations._
-import sbt.Keys.crossScalaVersions
+import sbt.Keys.{crossScalaVersions, licenses}
 import sbt.file
 import sbtcrossproject.CrossPlugin.autoImport.crossProject
-
-organization in ThisBuild := "com.github.allantl"
-homepage in ThisBuild := Some(url("https://github.com/allantl/value-entry"))
-licenses in ThisBuild := List("MIT" -> url("https://opensource.org/licenses/MIT"))
+import com.typesafe.sbt.pgp.PgpKeys.publishSigned
 
 val scala211Version = "2.11.12"
 val scala212Version = "2.12.8"
 
 lazy val commonSettings = Seq(
-  name := "value-entry",
+  organization := "com.github.allantl",
   scalaVersion := scala212Version,
-  crossScalaVersions := Seq(scala212Version, scala211Version),
-  libraryDependencies ++= Seq(
-    "org.scalatest" %%% "scalatest" % "3.0.7" % "test"
-  )
+  crossScalaVersions := Seq(scala212Version, scala211Version)
 )
-lazy val publishSettings = Seq(
+
+lazy val noPublishSettings = {
+  Seq(
+    publish := {},
+    publishLocal := {},
+    publishSigned := {},
+    publishArtifact := false
+  )
+}
+
+lazy val releaseSettings = Seq(
   releaseCrossBuild := true,
   releaseProcess := Seq[ReleaseStep](
     checkSnapshotDependencies,
@@ -59,14 +63,24 @@ lazy val publishSettings = Seq(
       "allan.timothy.leong@gmail.com",
       url("https://github.com/allantl")
     )
-  )
+  ),
+  homepage := Some(url("https://github.com/allantl/value-entry")),
+  licenses := List("MIT" -> url("https://opensource.org/licenses/MIT"))
 )
 
-lazy val root = project.in(file(".")).aggregate(coreJS, coreJVM)
+lazy val root = project.in(file("."))
+  .aggregate(coreJS, coreJVM)
+  .settings(noPublishSettings)
+  .settings(commonSettings, releaseSettings)
 
-lazy val core = crossProject(JSPlatform, JVMPlatform)
-  .in(file("."))
-  .settings(commonSettings, publishSettings)
+lazy val core = crossProject(JSPlatform, JVMPlatform).in(file("core"))
+  .settings(commonSettings, releaseSettings)
+  .settings(
+    name := "value-entry",
+    libraryDependencies ++= Seq(
+      "org.scalatest" %%% "scalatest" % "3.0.7" % "test"
+    )
+  )
 
 lazy val coreJVM = core.jvm
 lazy val coreJS = core.js
