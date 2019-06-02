@@ -6,7 +6,7 @@ Value entry for Scala/ScalaJS
 
 ```scala
 libraryDependencies ++= Seq(
-    "com.github.allantl" %%% "value-entry" % "0.1.0"
+    "com.github.allantl" %%% "value-entry" % "0.2.0"
 )
 ```
 
