@@ -5,9 +5,6 @@ trait ValueEntry {
   private[this] lazy val valueEntryName: String = toString
 
   def value: String = valueEntryName
-
-  case object Boom extends ValueEntry
-
 }
 
 object ValueEntry {
@@ -25,12 +22,12 @@ object ValueEntry {
   }
 
   trait Uncapitalized extends ValueEntry {
-    private def uncapitalized(s: String): String =
-      s.head.toLower + s.tail
-
     private[this] lazy val valueEntryName: String = uncapitalized(super.value)
 
     override def value: String = valueEntryName
+
+    private def uncapitalized(s: String): String =
+      s.head.toLower + s.tail
   }
 
   /**
